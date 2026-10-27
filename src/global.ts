@@ -1,5 +1,6 @@
 import { readGlobalMemories, withoutRecalledGlobals } from "./snapshot";
 import { databasePath } from "./config";
+import { t } from "./i18n";
 import { refreshMemoryStatus } from "./status";
 import { estimateTokens, Settings, type ExtensionAPI, type ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { cfgMemoryBackend } from "@oh-my-pi/pi-coding-agent/memory-backend/settings";
@@ -47,12 +48,12 @@ export default function globalMemory(pi: ExtensionAPI) {
 			});
 			const snapshot = readGlobalMemories(path, Date.now(),
 				window ? content => used + estimateTokens(toMessage(content)) <= window : undefined);
-			if (snapshot.omitted) notifyOnce(ctx, `Context is nearly full; omitted ${snapshot.omitted} lower-priority global memories for this request.`);
+			if (snapshot.omitted) notifyOnce(ctx, t("omitted", { count: snapshot.omitted }));
 			if (snapshot.count === 0) return { messages };
 			// The context hook changes only this request, not the session log or compaction summary.
 			return { messages: [toMessage(snapshot.content), ...messages] };
 		} catch (error) {
-			notifyOnce(ctx, `Could not read global memories; this request was sent without them: ${error instanceof Error ? error.message : String(error)}`);
+			notifyOnce(ctx, t("readFailed", { error: error instanceof Error ? error.message : String(error) }));
 			return { messages };
 		}
 	});

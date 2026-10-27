@@ -53,6 +53,16 @@ Run `/memories`, pick **Global** or **Project**, then select a memory to open it
 
 Edits take effect on the next model request. Edited project memories are also injected as `<memory_editor_updates>` so they apply even when recall would not surface them.
 
+### Interface language
+
+The editor, notifications, and status bar are available in English and Simplified Chinese. The language comes from `locale` in `~/.omp/agent/omp-mnemopi-memory.json`, otherwise from `LC_ALL`, `LC_MESSAGES`, or `LANG`; any Chinese locale selects Simplified Chinese, everything else English.
+
+```json
+{ "locale": "zh-CN" }
+```
+
+Prompts sent to models and log events are always English. Distilled memories are written in the language the user mainly used.
+
 ## How it works
 
 ### Global injection

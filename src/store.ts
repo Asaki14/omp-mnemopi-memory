@@ -7,6 +7,7 @@ import { Mnemopi } from "@oh-my-pi/pi-mnemopi/core";
 
 import { openForRead } from "./config";
 import { findArchiveIds, isArchiveSource } from "./policy";
+import { t } from "./i18n";
 const EDIT_SOURCE = "user-memory-editor";
 type Metadata = Record<string, unknown>;
 interface Origin { cwd?: string; project?: string }
@@ -32,7 +33,7 @@ interface StoredRow {
 export interface MemoryRow extends StoredRow { location: MemoryBank }
 export interface MemoryEntry { content: string; rows: MemoryRow[] }
 export class MemoryConflictError extends Error {
-	constructor() { super("This memory was changed by another session. Reopen it; nothing was overwritten."); }
+	constructor() { super(t("conflict")); }
 }
 function metadata(text: string | null): Metadata {
 	if (!text) return {};
@@ -227,7 +228,7 @@ function changeEntry(scope: MemoryScope, entry: MemoryEntry, content: string | u
 	}
 }
 export function saveEntry(scope: MemoryScope, entry: MemoryEntry, content: string): string {
-	if (!content.trim()) throw new Error("Saving empty text requires delete confirmation.");
+	if (!content.trim()) throw new Error(t("emptySave"));
 	if (content === entry.content) return entry.rows[0].id;
 	return changeEntry(scope, entry, content)!;
 }

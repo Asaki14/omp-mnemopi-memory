@@ -7,6 +7,7 @@ import { Settings, type ExtensionAPI, type ExtensionContext } from "@oh-my-pi/pi
 import { lookup } from "@oh-my-pi/pi-coding-agent/config/registry";
 import { cfgMemoryBackend } from "@oh-my-pi/pi-coding-agent/memory-backend/settings";
 import { databasePath } from "./config";
+import { t } from "./i18n";
 import { archiveRawMemories } from "./archive";
 import { conversationFromMessages, guidanceInput, safeConversation } from "./guidance";
 import { claimQueued, enqueue, MAX_ATTEMPTS, queueDirectory, release, type WorkerPayload } from "./queue";
@@ -96,10 +97,10 @@ export default function memoryGuidance(pi: ExtensionAPI): void {
 		try {
 			const status = await ctx.memory.status();
 			if (!status.active || status.backend !== "mnemopi" || !status.database || !status.retainBank) {
-				throw new Error("The memory backend has no writable target scope.");
+				throw new Error(t("noTarget"));
 			}
 			const database = status.database.startsWith("~/") ? join(homedir(), status.database.slice(2)) : status.database;
-			if (!isAbsolute(database) || !existsSync(database)) throw new Error("The memory database path is unavailable; no replacement database was created.");
+			if (!isAbsolute(database) || !existsSync(database)) throw new Error(t("noDatabase"));
 			lastHandled = key;
 			dispatch(ctx.cwd, {
 				job: { database, globalDatabase: databasePath(Settings.instance, lookup("mnemopi.dbPath")), bank: status.retainBank,
@@ -107,7 +108,7 @@ export default function memoryGuidance(pi: ExtensionAPI): void {
 				attempts: 0, queueDir: queueDirectory(Settings.instance.getAgentDir()),
 			});
 		} catch (error) {
-			ctx.ui.notify(`Automatic memory extraction failed: ${error instanceof Error ? error.message : String(error)}`, "warning");
+			ctx.ui.notify(t("extractionFailed", { error: error instanceof Error ? error.message : String(error) }), "warning");
 		}
 	};
 	pi.on("session_before_switch", finishSession);

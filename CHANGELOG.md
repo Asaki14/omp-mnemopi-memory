@@ -6,6 +6,7 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ### Added
 - Install as an OMP plugin with `omp plugin install github:Asaki14/omp-mnemopi-memory`.
+- Simplified Chinese interface, selected by `locale` in `omp-mnemopi-memory.json` or the POSIX locale.
 - GitHub Actions workflow running the test suite.
 
 ### Changed
