@@ -7,7 +7,7 @@ import { archiveRawMemories } from "../src/archive";
 import { conversationFromMessages, guidanceInput, parseGuidance, coverageInput, parseCoverage, type GuidanceConversation, type GuidanceFact } from "../src/guidance";
 import { readGlobalMemories, withoutRecalledGlobals } from "../src/snapshot";
 import { claimQueued, enqueue, type GuidanceJob } from "../src/queue";
-import { listEntries, saveEntry, type MemoryScope } from "../src/store";
+import { listEntries, listProjectEntries, saveEntry, type MemoryScope } from "../src/store";
 
 const cleanups: Array<() => void> = [];
 afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });
@@ -274,4 +274,14 @@ test("Global memories and archives remain readable after clean WAL sidecar remov
 	expect(existsSync(`${f.path}-shm`)).toBe(false);
 	expect(readGlobalMemories(f.path).content).toContain("This memory remains readable after WAL recovery.");
 	expect(archiveRawMemories(f.path).scannedBanks).toBe(1);
+});
+
+test("before Mnemopi creates any database, reads return empty results instead of failing", () => {
+	const root = mkdtempSync(join(tmpdir(), "guidance-fresh-"));
+	cleanups.push(() => rmSync(root, { recursive: true, force: true }));
+	const path = join(root, "mnemopi.db");
+	expect(readGlobalMemories(path).count).toBe(0);
+	expect(listProjectEntries(path, root)).toEqual([]);
+	expect(archiveRawMemories(path).scannedBanks).toBe(0);
+	expect(existsSync(path)).toBe(false);
 });

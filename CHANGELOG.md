@@ -12,6 +12,9 @@ All notable changes to this project are documented here. The format follows [Kee
 - Sources moved to `src/` and tests to `test/`.
 - The worker log is written to `logs/memory-guidance.log` next to the OMP agent directory, regardless of where the extension is installed.
 
+### Fixed
+- On a fresh install, reading memories before Mnemopi created its database no longer raises `unable to open database file`.
+
 ## [0.1.0] - 2026-10-27
 
 ### Added

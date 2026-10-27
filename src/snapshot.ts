@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { openForRead } from "./config";
 import { findArchiveIds, hasSecret, isArchiveSource } from "./policy";
 import { Database } from "bun:sqlite";
@@ -52,6 +53,8 @@ function render(entries: GlobalEntry[], omitted: number): string {
  * `fits` lets the caller enforce a context budget; lowest-priority entries are dropped first.
  */
 export function readGlobalMemories(path: string, now = Date.now(), fits?: (content: string) => boolean): Snapshot {
+	// Mnemopi creates the database lazily; before that there is nothing to inject.
+	if (!existsSync(path)) return { content: render([], 0), count: 0, entries: [], omitted: 0, withheld: 0 };
 	const db = openForRead(path);
 	try {
 		return db.transaction(() => {

@@ -113,7 +113,9 @@ function belongs(meta: Metadata, scope: MemoryScope, matches: Map<string, boolea
 
 /** Show only the current logical project; registered Git worktrees share that identity. */
 export function listScopes(globalPath: string, cwd: string): MemoryScope[] {
-	const global: MemoryScope = { global: true, root: dirname(globalPath), label: "Global", banks: [{ bank: "default", path: globalPath }] };
+	// Mnemopi creates the global database lazily; until then the global scope is simply empty.
+	const global: MemoryScope = { global: true, root: dirname(globalPath), label: "Global",
+		banks: existsSync(globalPath) ? [{ bank: "default", path: globalPath }] : [] };
 	const banksDir = join(dirname(globalPath), "banks");
 	const candidates: Array<{ bank: MemoryBank; origins: Origin[] }> = [];
 	if (existsSync(banksDir)) {
