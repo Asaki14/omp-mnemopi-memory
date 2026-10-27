@@ -8,9 +8,10 @@ All notable changes to this project are documented here. The format follows [Kee
 - Install as an OMP plugin with `omp plugin install github:Asaki14/omp-mnemopi-memory`.
 - Simplified Chinese interface, selected by `locale` in `omp-mnemopi-memory.json` or the POSIX locale.
 - GitHub Actions workflow running the test suite.
+- Chinese README, `llms.txt` for agent-driven installs, and an agent guide in `AGENTS.md`.
 
 ### Changed
-- Sources moved to `src/` and tests to `test/`.
+- Sources moved to `src/` and tests to `test/`; detailed behavior moved to `docs/how-it-works.md`.
 - The worker log is written to `logs/memory-guidance.log` next to the OMP agent directory, regardless of where the extension is installed.
 
 ### Fixed
