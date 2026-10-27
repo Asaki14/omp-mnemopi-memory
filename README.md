@@ -22,12 +22,16 @@ On every session start, input, and recall, the extension **invalidates** (soft-d
 ## Install
 
 ```sh
-git clone https://github.com/Asaki14/omp-mnemopi-memory ~/.omp/agent/extensions/omp-mnemopi-memory
-cd ~/.omp/agent/extensions/omp-mnemopi-memory
-BUN_BE_BUN=1 omp install --ignore-scripts
+omp plugin install github:Asaki14/omp-mnemopi-memory
 ```
 
-Install under `~/.omp/agent/extensions/<name>/`: OMP loads `index.ts` from first-level subdirectories, and the worker log path is resolved relative to that location.
+Or clone it as a local extension (OMP loads `index.ts` from each first-level subdirectory of `~/.omp/agent/extensions/`):
+
+```sh
+git clone https://github.com/Asaki14/omp-mnemopi-memory ~/.omp/agent/extensions/omp-mnemopi-memory
+cd ~/.omp/agent/extensions/omp-mnemopi-memory
+bun install
+```
 
 Configure `~/.omp/agent/config.yml`:
 
@@ -94,18 +98,24 @@ Global injection and archiving read Mnemopi tables directly. Required columns ar
 ## Development
 
 ```sh
-BUN_BE_BUN=1 omp test
+bun install
+bun test
 ```
 
 Tests use temporary databases only. For end-to-end checks against a real OMP host, also point `mnemopi.dbPath` at a temporary directory with `--config <overlay.yml>`; changing only the working directory still creates project banks in your real database.
 
-| File | Role |
+| Path | Role |
 |---|---|
 | `index.ts` | Entry point; registers the three modules below |
-| `global.ts`, `snapshot.ts` | Global injection and recall deduplication |
-| `extension.ts`, `store.ts`, `status.ts` | `/memories` editor, storage, status bar |
-| `session.ts`, `worker.ts`, `guidance.ts`, `automatic.ts`, `queue.ts` | Distillation and retry queue |
-| `archive.ts`, `policy.ts`, `config.ts` | Transcript archiving, shared rules, database access |
+| `src/global.ts`, `src/snapshot.ts` | Global injection and recall deduplication |
+| `src/extension.ts`, `src/store.ts`, `src/status.ts` | `/memories` editor, storage, status bar |
+| `src/session.ts`, `src/worker.ts`, `src/guidance.ts`, `src/automatic.ts`, `src/queue.ts` | Distillation and retry queue |
+| `src/archive.ts`, `src/policy.ts`, `src/config.ts` | Transcript archiving, shared rules, database access |
+| `test/` | Bun test suite |
+
+## Contributing
+
+Issues and pull requests are welcome. Run `bun test` before submitting, and add an entry under `Unreleased` in [CHANGELOG.md](CHANGELOG.md) for user-visible changes.
 
 ## License
 

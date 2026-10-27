@@ -4,14 +4,14 @@ import { spawnSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { Mnemopi } from "@oh-my-pi/pi-mnemopi/core";
-import { isArchiveSource } from "./policy";
-import { readGlobalMemories } from "./snapshot";
-import { deleteEntry, listEntries, listProjectEntries, listScopes, liveProjectEdits, MemoryConflictError, saveEntry, type MemoryScope } from "./store";
+import { isArchiveSource } from "../src/policy";
+import { readGlobalMemories } from "../src/snapshot";
+import { deleteEntry, listEntries, listProjectEntries, listScopes, liveProjectEdits, MemoryConflictError, saveEntry, type MemoryScope } from "../src/store";
 
 const cleanups: Array<() => void> = [];
 afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });
 function fixture(path?: string, cwd?: string) {
-	const root = realpathSync(mkdtempSync(join(tmpdir(), "memory-editor-test-")));
+	const root = realpathSync(mkdtempSync(join(tmpdir(), "omp-mnemopi-memory-test-")));
 	cleanups.push(() => rmSync(root, { recursive: true, force: true }));
 	const dbPath = path ?? join(root, "mnemopi.db");
 	mkdirSync(dirname(dbPath), { recursive: true });

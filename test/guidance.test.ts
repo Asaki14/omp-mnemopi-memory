@@ -3,11 +3,11 @@ import { existsSync, mkdtempSync, readdirSync, rmSync, utimesSync } from "node:f
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Mnemopi } from "@oh-my-pi/pi-mnemopi/core";
-import { archiveRawMemories } from "./archive";
-import { conversationFromMessages, guidanceInput, parseGuidance, coverageInput, parseCoverage, type GuidanceConversation, type GuidanceFact } from "./guidance";
-import { readGlobalMemories, withoutRecalledGlobals } from "./snapshot";
-import { claimQueued, enqueue, type GuidanceJob } from "./queue";
-import { listEntries, saveEntry, type MemoryScope } from "./store";
+import { archiveRawMemories } from "../src/archive";
+import { conversationFromMessages, guidanceInput, parseGuidance, coverageInput, parseCoverage, type GuidanceConversation, type GuidanceFact } from "../src/guidance";
+import { readGlobalMemories, withoutRecalledGlobals } from "../src/snapshot";
+import { claimQueued, enqueue, type GuidanceJob } from "../src/queue";
+import { listEntries, saveEntry, type MemoryScope } from "../src/store";
 
 const cleanups: Array<() => void> = [];
 afterEach(() => { for (const cleanup of cleanups.splice(0).reverse()) cleanup(); });

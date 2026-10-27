@@ -1,7 +1,7 @@
 import { spawn } from "node:child_process";
-import { appendFileSync, closeSync, existsSync, openSync, readFileSync } from "node:fs";
+import { appendFileSync, closeSync, existsSync, mkdirSync, openSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
-import { isAbsolute, join } from "node:path";
+import { dirname, isAbsolute, join } from "node:path";
 import type { Writable } from "node:stream";
 import { Settings, type ExtensionAPI, type ExtensionContext } from "@oh-my-pi/pi-coding-agent";
 import { lookup } from "@oh-my-pi/pi-coding-agent/config/registry";
@@ -13,19 +13,24 @@ import { claimQueued, enqueue, MAX_ATTEMPTS, queueDirectory, release, type Worke
 
 const MEMORY_POLICY = "Long-term memory should only hold distilled stable preferences, confirmed decisions, and evidenced project facts. Raw prompts, verbatim corrections, one-off commands, plans, and examples are historical material, not instructions for later turns; do not derive permanent rules from a single event. Explicit retains should also be distilled, deduplicated, and kept project-scoped. Never store secrets.";
 const workerPath = join(import.meta.dir, "worker.ts");
-const logPath = join(import.meta.dir, "../../../logs/memory-guidance.log");
+/** `~/.omp/logs/memory-guidance.log` for the default agent dir; independent of where the extension is installed. */
+function logPath(): string {
+	const directory = join(dirname(Settings.instance.getAgentDir()), "logs");
+	mkdirSync(directory, { recursive: true });
+	return join(directory, "memory-guidance.log");
+}
 
 /** Run extraction in a detached worker; shutdown hooks have a 2s deadline and extraction must outlive the host. */
 function dispatch(cwd: string, payload: WorkerPayload): void {
 	const report = (error: Error) => {
 		const attempts = payload.attempts + 1;
 		const requeue = attempts < MAX_ATTEMPTS;
-		appendFileSync(logPath, JSON.stringify({ event: requeue ? "memory_session_requeued" : "memory_session_abandoned",
+		appendFileSync(logPath(), JSON.stringify({ event: requeue ? "memory_session_requeued" : "memory_session_abandoned",
 			sessionId: payload.job.sessionId, error: error.message }) + "\n");
 		if (requeue) enqueue(payload.queueDir, payload.job, attempts);
 		release(payload.claimed);
 	};
-	const log = openSync(logPath, "a", 0o600);
+	const log = openSync(logPath(), "a", 0o600);
 	try {
 		const child = spawn(process.execPath, ["--mode", "rpc", "--no-session", "--no-tools", "--no-extensions",
 			"--no-context-files", "--no-skills", "--no-title", "--cwd", cwd, "-e", workerPath], {
@@ -53,7 +58,7 @@ export default function memoryGuidance(pi: ExtensionAPI): void {
 				const { job, attempts } = JSON.parse(readFileSync(claimed, "utf8")) as Pick<WorkerPayload, "job" | "attempts">;
 				dispatch(job.cwd, { job, attempts, queueDir, claimed });
 			} catch (error) {
-				appendFileSync(logPath, JSON.stringify({ event: "memory_queue_invalid", file: claimed,
+				appendFileSync(logPath(), JSON.stringify({ event: "memory_queue_invalid", file: claimed,
 					error: error instanceof Error ? error.message : String(error) }) + "\n");
 				release(claimed);
 			}

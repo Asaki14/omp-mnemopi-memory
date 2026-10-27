@@ -5,6 +5,26 @@
   "license": "MIT",
   "private": true,
   "type": "module",
+  "keywords": [
+    "omp",
+    "oh-my-pi",
+    "omp-extension",
+    "mnemopi",
+    "memory",
+    "coding-agent"
+  ],
+  "files": [
+    "index.ts",
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "omp": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/Asaki14/omp-mnemopi-memory.git"
