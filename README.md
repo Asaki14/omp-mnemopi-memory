@@ -70,7 +70,7 @@ Worker results are logged to `~/.omp/logs/memory-guidance.log`. The full pipelin
 
 Mnemopi's default retain copies whole conversations into memory. Recall then surfaces old prompts, one-off commands, and abandoned plans as if they were standing instructions, and you have no easy way to see or correct what got stored.
 
-This extension takes the opposite stance: remember less, and make all of it visible. A memory is only saved when the user said it or confirmed it and a verbatim quote backs it up. Anything uncertain is dropped rather than guessed. Everything that does get saved can be read and edited in one place.
+This extension takes the opposite stance: remember less, and make all of it visible. Only two kinds of memory are saved: preferences and decisions the user stated explicitly, and project facts backed by a verbatim quote from the session. Anything uncertain is dropped rather than guessed. Everything that does get saved can be read and edited in one place.
 
 ## Uninstall
 
